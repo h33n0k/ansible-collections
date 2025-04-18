@@ -1,0 +1,10 @@
+warn_list:
+  - fqcn[action]
+  - fqcn[bare-variable]
+
+skip_list:
+  - galaxy[no-changelog]
+  - yaml[empty-lines]
+
+exclude_paths:
+  - .github/*
