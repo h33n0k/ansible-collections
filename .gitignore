@@ -1,2 +1,6 @@
 .ansible/
 venv/
+
+# Ignoring galaxy dependencies
+collections/ansible_collections/*
+!collections/ansible_collections/h33n0k

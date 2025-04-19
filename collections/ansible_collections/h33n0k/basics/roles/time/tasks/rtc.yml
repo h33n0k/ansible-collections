@@ -1,0 +1,43 @@
+---
+- name: Ensure util-linux is installed (provides hwclock)
+  ansible.builtin.apt:
+    name:
+      - util-linux
+    state: present
+    update_cache: true
+  when: time_set_rtc
+
+- name: Check if `hwclock` is available
+  ansible.builtin.command: which hwclock
+  register: hwclock_check
+  ignore_errors: yes
+  when: time_set_rtc
+
+- name: Set fact if hwclock is available
+  ansible.builtin.set_fact:
+    has_hwclock: "{{ hwclock_check.rc == 0 }}"
+  when: time_set_rtc
+
+- name: Synchronize hardware clock from system time
+  command: hwclock --systohc
+  when: (has_hwclock | default(false)) and time_set_rtc
+
+- name: Persist rtc module load across reboots
+  copy:
+    dest: /etc/modules-load.d/rtc.conf
+    content: "rtc\n"
+    owner: root
+    group: root
+    mode: '0644'
+  when: time_set_rtc
+
+- name: Show RTC date
+  command: hwclock --show
+  register: rtc_time
+  changed_when: false
+  when: time_set_rtc
+
+- name: Print RTC date
+  debug:
+    msg: "RTC Time: {{ rtc_time.stdout }}"
+  when: time_set_rtc

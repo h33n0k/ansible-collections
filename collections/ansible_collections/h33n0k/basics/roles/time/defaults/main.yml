@@ -1,0 +1,47 @@
+# Primary NTP servers
+# Ordered by priority. These should be reliable and geographically close.
+time_timesyncd_ntp_servers:
+  - 0.debian.pool.ntp.org
+  - 1.debian.pool.ntp.org
+  - 2.debian.pool.ntp.org
+  - 3.debian.pool.ntp.org
+  - time.cloudflare.com
+
+# Fallback servers used when primary servers are unreachable.
+# Typically from global NTP pools.
+time_timesyncd_fallback_ntp_servers:
+  - 0.pool.ntp.org
+  - 1.pool.ntp.org
+
+# Minimum interval (in seconds) between NTP polls.
+# Lower means more frequent queries. Use for faster recovery on unstable clocks.
+time_timesyncd_poll_min: 32
+
+# Maximum interval (in seconds) between NTP polls.
+# Increases automatically when time appears stable.
+time_timesyncd_poll_max: 2048
+
+# Maximum root distance allowed before rejecting a server (in seconds).
+# Lower means stricter accuracy; higher tolerates more error.
+time_timesyncd_root_distance_max: 5
+
+# Time between retries when an NTP connection attempt fails (in seconds).
+# Lower value means faster failover to alternate servers.
+time_timesyncd_connection_rety: 30
+
+# Interval (in seconds) to persist current synchronization state to disk.
+# Lower value improves reboot recovery; higher value reduces disk writes.
+time_timesyncd_save_interval: 60
+
+# Set your desired system timezone (must exist in /usr/share/zoneinfo)
+time_timezone: 'Etc/UTC'
+
+# Path to the Real-Time Clock (RTC) device.
+# This is the device file representing the system's hardware clock.
+# Typically /dev/rtc or /dev/rtc0 on most systems.
+time_rtc_device: /dev/rtc
+
+# Kernel module used to interface with the RTC hardware.
+# This is the driver module responsible for managing the RTC device.
+# Commonly, 'rtc_cmos' is used for most systems, but it may vary depending on hardware.
+time_rtc_module: rtc_cmos

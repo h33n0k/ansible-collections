@@ -1,0 +1,37 @@
+---
+- name: Check if systemd-timesyncd service exists
+  ansible.builtin.shell: |
+    systemctl status systemd-timesyncd.service >/dev/null 2>&1
+  register: timesyncd_status
+  ignore_errors: true
+  changed_when: false
+
+- name: Install systemd-timesyncd if service is missing
+  ansible.builtin.apt:
+    name: systemd-timesyncd
+    state: present
+    update_cache: yes
+  when: timesyncd_status.rc != 0
+
+- name: Ensure systemd-timesyncd is present
+  ansible.builtin.stat:
+    path: /lib/systemd/systemd-timesyncd
+  register: timesyncd_binary
+
+- name: Fail if systemd-timesyncd is not available on system
+  ansible.builtin.fail:
+    msg: "systemd-timesyncd is not available on this system"
+  when: not timesyncd_binary.stat.exists
+
+- name: Deploy systemd-timesyncd configuration
+  template:
+    src: timesyncd/timesyncd.conf
+    dest: /etc/systemd/timesyncd.conf
+    owner: root
+    group: adm
+    mode: '0644'
+  notify: Restart timesyncd
+
+- name: Set NTP to true via timedatectl
+  command: timedatectl set-ntp true
+  changed_when: false  # doesn't emit "changed" every time

@@ -1,0 +1,19 @@
+---
+galaxy_info:
+  role_name: time
+  author: h33n0k
+  license: MIT
+
+  description: Configure timezone and systemd-timesyncd
+  galaxy_tags:
+    - timezone
+    - ntp
+    - timesync
+    - systemd
+
+  min_ansible_version: '2.12'
+  platforms:
+    - name: Debian
+      versions:
+        - bookworm
+        - bullseye

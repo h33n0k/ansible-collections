@@ -1,0 +1,8 @@
+---
+- name: Basic setup
+  hosts: all
+  become: true
+  collections:
+    - h33n0k.basics
+  roles:
+    - h33n0k.basics.time

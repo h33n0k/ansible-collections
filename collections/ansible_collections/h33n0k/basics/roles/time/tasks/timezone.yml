@@ -1,0 +1,17 @@
+---
+- name: Ensure correct localtime symlink is set
+  ansible.builtin.file:
+    src: "/usr/share/zoneinfo/{{ time_timezone }}"
+    dest: "/etc/localtime"
+    state: link
+    force: true
+  notify: Restart timesyncd
+
+- name: Set timezone in /etc/timezone (for tzdata compatibility)
+  ansible.builtin.copy:
+    content: "{{ time_timezone }}\n"
+    dest: /etc/timezone
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Restart timesyncd
