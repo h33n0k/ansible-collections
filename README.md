@@ -45,7 +45,8 @@ Linting is enforced across all roles to ensure code quality and best practices. 
 ```bash
 make lint
 make test # test all roles
-make test ROLE=basics/time # test time role
+make test ROLE=basics/time # test specific role
+make test CHANGED_SINCE=<commit-hash> # test changed role since this commit
 ```
 
 ---

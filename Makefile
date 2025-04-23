@@ -17,7 +17,9 @@ help: ## Show help for each command
 	@echo "Optional vars:"
 	@echo "  ROLE=namespace/role_name     Filter by role name"
 	@echo "  STAGED_ONLY=true             Run only on staged roles"
-	@echo "  MOLECULE_OPTS=\"--debug\"      Extra options for molecule"
+	@echo "  CHANGED_SINCE=<commit>        Only test roles changed since this commit (e.g. latest merge base)"
+	@echo "  BASE_BRANCH=<branch>         Base branch to compare against for changes (default: origin/main)"
+
 
 init: ## Create virtualenv
 	@echo "Creating virtual environment..."
