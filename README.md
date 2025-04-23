@@ -43,8 +43,10 @@ This structure promotes clarity and encourages reuse across projects.
 Linting is enforced across all roles to ensure code quality and best practices. To run linting:
 
 ```bash
-make lint`
-``````
+make lint
+make test # test all roles
+make test ROLE=basics/time # test time role
+```
 
 ---
 

@@ -32,8 +32,16 @@ Thank you for considering contributing to this project! Follow the steps below t
    make prepare
    ```
 
+3. **Test roles**
+    
+   ```bash
+   make test # test all roles
+   make test ROLE=basics/time # test specific role
+   make test STAGED_ONLY # test modified role
+   ```
+
 ---
 
 ## Tips
 
-- Ensure your code is formatted and linted before committing.
+- Ensure your code is formatted, linted and tested before committing.

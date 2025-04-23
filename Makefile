@@ -1,12 +1,25 @@
 # Variables
 SHELL := /bin/bash
-MAKEFLAGS += --no-print-directory
 PYTHON := python3
 VENV_DIR := venv
 COLLECTIONS_BASE := collections/ansible_collections/h33n0k
 COLLECTIONS := $(wildcard $(COLLECTIONS_BASE)/*)
 
-init:
+.PHONY: help init prepare lint test
+
+help: ## Show help for each command
+	@echo "Usage: make <target> [VAR=value]"
+	@echo
+	@echo "Targets:"
+	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | \
+		awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-16s\033[0m %s\n", $$1, $$2}'
+	@echo
+	@echo "Optional vars:"
+	@echo "  ROLE=namespace/role_name     Filter by role name"
+	@echo "  STAGED_ONLY=true             Run only on staged roles"
+	@echo "  MOLECULE_OPTS=\"--debug\"      Extra options for molecule"
+
+init: ## Create virtualenv
 	@echo "Creating virtual environment..."
 	$(PYTHON) -m venv $(VENV_DIR)
 
@@ -14,7 +27,7 @@ init:
 	@echo "source $(VENV_DIR)/bin/activate"
 	@echo "---"
 
-prepare:
+prepare: ## Install dev and Ansible galaxy dependencies
 	@echo "Installing dev dependencies"
 	pip install -r requirements-dev.txt
 	pre-commit install
@@ -30,12 +43,12 @@ prepare:
 		fi \
 	done
 
-lint:
+lint: ## Lint all roles
 	@echo "Linting codebase"
 	ansible-lint .
 
 test: ## Run molecule test on all or specific role
-	@echo -e "\n" > /dev/tty 2>&1
+	@echo -e "\n" > /dev/tty 2>&1; \
 	for collection in $(COLLECTIONS); do \
 		roles_dir="$$collection/roles"; \
 		if [ -d "$$roles_dir" ]; then \
