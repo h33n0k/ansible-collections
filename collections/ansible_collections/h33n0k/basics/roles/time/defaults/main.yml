@@ -36,6 +36,11 @@ time_timesyncd_save_interval: 60
 # Set your desired system timezone (must exist in /usr/share/zoneinfo)
 time_timezone: 'Etc/UTC'
 
+# Whether to enable configuration and synchronization of the hardware RTC.
+# Set to `true` to configure RTC support and sync system time with the hardware clock.
+# Set to `false` to skip all RTC-related setup (useful for containerized environments without RTC).
+time_set_rtc: true
+
 # Path to the Real-Time Clock (RTC) device.
 # This is the device file representing the system's hardware clock.
 # Typically /dev/rtc or /dev/rtc0 on most systems.

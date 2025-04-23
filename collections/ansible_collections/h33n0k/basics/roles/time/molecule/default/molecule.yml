@@ -1,0 +1,26 @@
+---
+driver:
+  name: docker
+
+provisioner:
+  name: ansible
+  env:
+    ANSIBLE_CONFIG: ../../../../../../../../ansible.cfg
+
+platforms:
+
+  - name: custom-debian11-systemd
+    image: 'custom-debian11-systemd'
+    command: /lib/systemd/systemd
+    environment:
+      container: docker
+    dockerfile: Dockerfile
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:rw
+      - /run
+      - /run/lock
+    privileged: true
+    cgroupns_mode: host
+    pre_build_image: false
+    ansible_variables:
+      ansible_python_interpreter: /usr/bin/python3.9

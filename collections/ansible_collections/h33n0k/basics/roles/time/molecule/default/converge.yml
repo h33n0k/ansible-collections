@@ -1,0 +1,11 @@
+---
+- name: Converge
+  hosts: all
+  gather_facts: false
+  become: false
+
+  vars:
+    time_set_rtc: false
+
+  roles:
+    - role: h33n0k.basics.time
