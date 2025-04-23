@@ -24,3 +24,9 @@ platforms:
     pre_build_image: false
     ansible_variables:
       ansible_python_interpreter: /usr/bin/python3.9
+
+verifier:
+  name: testinfra
+  options:
+    v: true
+    s: true

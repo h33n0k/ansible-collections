@@ -1,8 +1,8 @@
 ---
 - name: Converge
   hosts: all
-  gather_facts: false
-  become: false
+  gather_facts: true
+  become: true
 
   vars:
     time_set_rtc: false

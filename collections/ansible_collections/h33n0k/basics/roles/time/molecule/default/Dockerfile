@@ -1,7 +1,7 @@
 # Based on Jeff Geerling's original container: https://github.com/geerlingguy/docker-debian11-ansible
 # This version is adapted for test usage with systemd-timesyncd support.
 # Modifications:
-# - Added `systemd-timesyncd` and `kmod` to apt package list
+# - Added `systemd-timesyncd` apt package list
 
 FROM debian:bullseye
 LABEL maintainer="Jeff Geerling"
@@ -13,7 +13,7 @@ ENV pip_packages "ansible cryptography"
 # Install dependencies.
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
-       sudo systemd systemd-sysv systemd-timesyncd kmod \
+       sudo systemd systemd-sysv systemd-timesyncd \
        build-essential wget libffi-dev libssl-dev procps \
        python3-pip python3-dev python3-setuptools python3-wheel python3-apt \
        iproute2 dbus \

@@ -1,6 +1,9 @@
 .ansible/
 venv/
 
+__pycache__
+pytestdebug.log
+
 # Ignoring galaxy dependencies
 collections/ansible_collections/*
 !collections/ansible_collections/h33n0k
