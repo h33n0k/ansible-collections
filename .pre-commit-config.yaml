@@ -12,12 +12,23 @@ repos:
 
   - repo: local
     hooks:
+
       - id: ansible-lint
         name: ansible-lint
         entry: ansible-lint .
         language: system
         pass_filenames: false
         always_run: true
+        fail_fast: true
+
+      - id: molecule-staged-test
+        name: molecule-staged-test
+        entry: bash -c 'exec stdbuf -oL -eL env MAKEFLAGS= make --always-make test STAGED_ONLY=true'
+        language: system
+        pass_filenames: false
+        always_run: true
+        stages: [pre-commit]
+        verbose: true
 
   - repo: https://github.com/commitizen-tools/commitizen
     rev: v4.6.0
