@@ -2,18 +2,18 @@
 
 # Configure systemd-timesyncd service
 - name: Configure systemd-timesyncd
-  include_tasks: timesyncd.yml
+  ansible.builtin.include_tasks: timesyncd.yml
   tags:
     - timesyncd
 
 # Configure timezone settings
 - name: Configure timezone
-  include_tasks: timezone.yml
+  ansible.builtin.include_tasks: timezone.yml
   tags:
     - timezone
 
 # Configure RTC
 - name: Configure RTC
-  include_tasks: rtc.yml
+  ansible.builtin.include_tasks: rtc.yml
   tags:
     - rtc

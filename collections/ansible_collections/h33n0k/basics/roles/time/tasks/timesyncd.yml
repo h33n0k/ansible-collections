@@ -10,7 +10,7 @@
   ansible.builtin.apt:
     name: systemd-timesyncd
     state: present
-    update_cache: yes
+    update_cache: true
   when: timesyncd_status.rc != 0
 
 - name: Ensure systemd-timesyncd is present
@@ -24,7 +24,7 @@
   when: not timesyncd_binary.stat.exists
 
 - name: Deploy systemd-timesyncd configuration
-  template:
+  ansible.builtin.template:
     src: timesyncd/timesyncd.conf
     dest: /etc/systemd/timesyncd.conf
     owner: root
@@ -33,5 +33,5 @@
   notify: Restart timesyncd
 
 - name: Set NTP to true via timedatectl
-  command: timedatectl set-ntp true
+  ansible.builtin.command: timedatectl set-ntp true
   changed_when: false  # doesn't emit "changed" every time
