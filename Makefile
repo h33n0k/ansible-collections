@@ -47,7 +47,7 @@ prepare: ## Install dev and Ansible galaxy dependencies
 
 lint: ## Lint all roles
 	@echo "Linting codebase"
-	ansible-lint .
+	ansible-lint $(COLLECTIONS_BASE)
 
 test: ## Run molecule test on all or specific roles
 	@echo -e "\n" > /dev/tty 2>&1; \

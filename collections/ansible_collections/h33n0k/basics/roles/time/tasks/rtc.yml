@@ -10,8 +10,9 @@
 - name: Check if `hwclock` is available
   ansible.builtin.command: which hwclock
   register: hwclock_check
-  ignore_errors: yes
+  ignore_errors: true
   when: time_set_rtc
+  changed_when: false
 
 - name: Set fact if hwclock is available
   ansible.builtin.set_fact:
@@ -19,11 +20,12 @@
   when: time_set_rtc
 
 - name: Synchronize hardware clock from system time
-  command: hwclock --systohc
+  ansible.builtin.command: hwclock --systohc
   when: (has_hwclock | default(false)) and time_set_rtc
+  changed_when: false
 
 - name: Persist rtc module load across reboots
-  copy:
+  ansible.builtin.copy:
     dest: /etc/modules-load.d/rtc.conf
     content: "rtc\n"
     owner: root
@@ -32,12 +34,12 @@
   when: time_set_rtc
 
 - name: Show RTC date
-  command: hwclock --show
+  ansible.builtin.command: hwclock --show
   register: rtc_time
-  changed_when: false
   when: time_set_rtc
+  changed_when: false
 
 - name: Print RTC date
-  debug:
+  ansible.builtin.debug:
     msg: "RTC Time: {{ rtc_time.stdout }}"
   when: time_set_rtc
