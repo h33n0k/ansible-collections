@@ -1,0 +1,28 @@
+---
+- name: Ensure rsyslog is installed
+  ansible.builtin.apt:
+    name:
+      - rsyslog
+    state: present
+
+- name: Deploy rsyslog configuration
+  ansible.builtin.template:
+    src: rsyslog/rsyslog.conf
+    dest: /etc/rsyslog.conf
+    owner: root
+    group: adm
+    mode: '0644'
+
+- name: Deploy logrotation configuration
+  ansible.builtin.template:
+    src: rsyslog/logrotate.conf
+    dest: /etc/logrotate.conf
+    owner: root
+    group: adm
+    mode: '0644'
+
+- name: Ensure rsyslog is started and enabled
+  ansible.builtin.service:
+    name: rsyslog
+    state: started
+    enabled: true

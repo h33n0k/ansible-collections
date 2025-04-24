@@ -6,3 +6,4 @@
     - h33n0k.basics
   roles:
     - h33n0k.basics.time
+    - h33n0k.basics.logging

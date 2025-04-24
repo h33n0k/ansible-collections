@@ -1,0 +1,13 @@
+---
+
+# Configure rsyslog service
+- name: Configure rsyslog
+  ansible.builtin.include_tasks: rsyslog.yml
+  tags:
+    - rsyslog
+
+# Configure auditd service
+- name: Configure auditd
+  ansible.builtin.include_tasks: auditd.yml
+  tags:
+    - auditd
