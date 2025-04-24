@@ -1,0 +1,20 @@
+---
+- name: Trigger logrotate before verification
+  hosts: all
+  become: true
+  tasks:
+
+    # Write entry into /var/log/any.log
+    - name: Write test message to rsyslog
+      ansible.builtin.command: logger 'Molecule test entry'
+      changed_when: false
+
+    # Trigger logrotate
+    - name: Force logrotate on rsyslog config
+      ansible.builtin.command: logrotate -f /etc/logrotate.conf
+      changed_when: false
+
+    # Wait before verification
+    - name: Wait a second to allow postrotate script to run
+      ansible.builtin.pause:
+        seconds: 1
