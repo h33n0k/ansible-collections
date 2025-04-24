@@ -1,0 +1,4 @@
+-a always,exit -F arch=b64 -S execve -C uid!=euid -F euid=0 -k privilege_escalation
+-a always,exit -F arch=b32 -S execve -C uid!=euid -F euid=0 -k privilege_escalation
+-a always,exit -F arch=b64 -S execve -k command_exec
+-a always,exit -F arch=b32 -S execve -k command_exec
