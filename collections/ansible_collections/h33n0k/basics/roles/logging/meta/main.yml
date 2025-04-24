@@ -1,0 +1,18 @@
+---
+galaxy_info:
+  role_name: logging
+  author: h33n0k
+  license: MIT
+
+  description: Configure system logging
+  galaxy_tags:
+    - log
+    - timesync
+    - security
+
+  min_ansible_version: '2.12'
+  platforms:
+    - name: Debian
+      versions:
+        - bookworm
+        - bullseye

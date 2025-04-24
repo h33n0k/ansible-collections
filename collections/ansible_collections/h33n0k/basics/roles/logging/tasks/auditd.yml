@@ -1,0 +1,22 @@
+---
+- name: Ensure auditd is installed
+  ansible.builtin.apt:
+    name:
+      - auditd
+      - audispd-plugins
+    state: present
+
+- name: Deploy auditd configuration
+  ansible.builtin.template:
+    src: auditd/auditd.conf
+    dest: /etc/audit/auditd.conf
+    owner: root
+    group: adm
+    mode: '0640'
+
+- name: Ensure auditd is started and enabled
+  ansible.builtin.service:
+    name: auditd
+    state: started
+    enabled: true
+  when: molecule_testing is not defined or (not molecule_testing | bool) # Do not start service with molecule see documentation.
