@@ -1,0 +1,11 @@
+---
+- name: Converge
+  hosts: all
+  gather_facts: true
+  become: true
+
+  vars:
+    molecule_testing: true
+
+  roles:
+    - role: h33n0k.basics.logging
