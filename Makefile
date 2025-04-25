@@ -50,8 +50,7 @@ lint: ## Lint all roles
 	ansible-lint $(COLLECTIONS_BASE)
 
 test: ## Run molecule test on all or specific roles
-	@echo -e "\n" > /dev/tty 2>&1; \
-	for collection in $(COLLECTIONS); do \
+	@for collection in $(COLLECTIONS); do \
 		roles_dir="$$collection/roles"; \
 		if [ -d "$$roles_dir" ]; then \
 			for role in $$roles_dir/*; do \
@@ -65,19 +64,19 @@ test: ## Run molecule test on all or specific roles
 						if [ "$(STAGED_ONLY)" = "true" ]; then \
 							scope=$$(git diff --cached --name-only | grep "^$$role" || true); \
 							if [ -z "$$scope" ]; then \
-								echo "[SKIP]: Role \`$$name\` not staged." > /dev/tty 2>&1; \
+								echo "[SKIP]: Role \`$$name\` not staged."; \
 								continue; \
 							fi; \
 						elif [ -n "$(CHANGED_SINCE)" ]; then \
 							base_branch="$${BASE_BRANCH:-origin/main}"; \
 							changed=$$(git diff --name-only "$$base_branch...$(CHANGED_SINCE)" | grep "^$$role" || true); \
 							if [ -z "$$changed" ]; then \
-								echo "[SKIP]: Role \`$$name\` unchanged since \`$(CHANGED_SINCE)\`." > /dev/tty 2>&1; \
+								echo "[SKIP]: Role \`$$name\` unchanged since \`$(CHANGED_SINCE)\`."; \
 								continue; \
 							fi; \
 						fi; \
-						echo "[INFO]: Testing role \`$$name\`." > /dev/tty 2>&1; \
-						(cd "$$role" && molecule test) > /dev/tty 2>&1; \
+						echo "[INFO]: Testing role \`$$name\`."; \
+						(cd "$$role" && molecule test); \
 					fi; \
 				fi; \
 			done; \
