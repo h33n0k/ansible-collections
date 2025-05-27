@@ -9,3 +9,7 @@ auth_users:
       - sudo
       - adm
       - ssh
+
+# SSH
+auth_sshd_port: 22
+auth_sshd_permit_root: false

@@ -9,3 +9,8 @@
   ansible.builtin.include_tasks: users.yml
   tags:
     - users
+
+- name: Setup SSH server
+  ansible.builtin.include_tasks: sshd.yml
+  tags:
+    - sshd
