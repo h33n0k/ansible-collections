@@ -58,9 +58,9 @@ test: ## Run molecule test on all or specific roles
 					[ "$$(basename $$collection)/$$(basename $$role)" != "$(ROLE)" ] && continue; \
 				fi; \
 				if [ -d "$$role" ]; then \
-					config="$$role/molecule/default/molecule.yml"; \
 					name="$$(basename $$collection)/$$(basename $$role)"; \
-					if [ -f "$$config" ]; then \
+					scenarios="$$(find $$role -type f -iname molecule.yml)"; \
+					if [ ! -z "$$scenarios" ]; then \
 						if [ "$(STAGED_ONLY)" = "true" ]; then \
 							scope=$$(git diff --cached --name-only | grep "^$$role" || true); \
 							if [ -z "$$scope" ]; then \
@@ -75,8 +75,11 @@ test: ## Run molecule test on all or specific roles
 								continue; \
 							fi; \
 						fi; \
-						echo "[INFO]: Testing role \`$$name\`."; \
-						(cd "$$role" && molecule test); \
+						for scenario in "$${scenarios[@]}"; do \
+							s_name="$$(basename $$(dirname $$scenario))"; \
+							echo "[INFO]: Testing role \`$$name\` [$$s_name]."; \
+							(cd "$$role" && molecule test --scenario-name "$$s_name"); \
+						done; \
 					fi; \
 				fi; \
 			done; \
