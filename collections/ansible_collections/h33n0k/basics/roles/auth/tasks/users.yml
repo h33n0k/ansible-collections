@@ -1,0 +1,10 @@
+---
+# Setup Users
+- name: Setup users
+  ansible.builtin.user:
+    name: '{{ item.username }}'
+    create_home: '{{ item.home | default(true) }}'
+    groups: '{{ item.groups | default([]) | join(",") }}'
+    state: present
+    append: false
+  loop: '{{ auth_users }}'
