@@ -1,0 +1,14 @@
+---
+- name: Restart sshd
+  become: true
+  ansible.builtin.systemd:
+    name: ssh
+    state: restarted
+    enabled: true
+
+- name: Restart rsyslog
+  become: true
+  ansible.builtin.systemd:
+    name: rsyslog
+    state: restarted
+    enabled: true

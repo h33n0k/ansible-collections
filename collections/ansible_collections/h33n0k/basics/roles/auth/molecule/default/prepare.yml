@@ -1,0 +1,19 @@
+---
+- name: Prepare
+  hosts: all
+  gather_facts: false
+  become: true
+  vars_files:
+    - vars.yml
+  tasks:
+    - name: Update apt package cache
+      ansible.builtin.apt:
+        update_cache: true
+
+    - name: Create rsyslog config directory
+      ansible.builtin.file:
+        dest: /etc/rsyslog.d
+        state: directory
+        owner: root
+        group: adm
+        mode: '0644'

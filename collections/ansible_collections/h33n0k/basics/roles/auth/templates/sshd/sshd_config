@@ -1,0 +1,44 @@
+# Protocol
+Protocol 2
+Port {{ auth_sshd_port }}
+
+# SFTP
+Subsystem sftp /usr/lib/openssh/sftp-server
+
+# Logging
+PrintMotd no
+SyslogFacility AUTH
+LogLevel Verbose
+
+# Authentication:
+LoginGraceTime 2m
+PermitRootLogin {{ 'yes' if auth_sshd_permit_root else 'no' }}
+StrictModes yes
+MaxAuthTries 3
+MaxSessions 3
+UsePAM yes
+
+PermitEmptyPasswords no
+PasswordAuthentication no
+ChallengeResponseAuthentication no
+KerberosAuthentication no
+GSSAPIAuthentication no
+
+PubkeyAuthentication yes
+AuthorizedKeysFile %h/.ssh/authorized_keys
+HostKey /etc/ssh/ssh_host_ed25519_key
+HostKey /etc/ssh/ssh_host_rsa_key
+
+# MAC algorithms
+MACs hmac-sha2-512,hmac-sha2-256
+
+# KexAlgorithms for key exchange
+KexAlgorithms curve25519-sha256@libssh.org,diffie-hellman-group-exchange-sha256
+
+X11Forwarding no
+AllowTcpForwarding no
+AllowAgentForwarding no
+AllowGroups ssh
+
+ClientAliveInterval 300
+ClientAliveCountMax 2
