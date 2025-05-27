@@ -1,0 +1,11 @@
+---
+auth_ssh_group_gid: 1022
+
+# Users
+auth_users:
+  - username: h33n0k
+    home: true
+    groups:
+      - sudo
+      - adm
+      - ssh
