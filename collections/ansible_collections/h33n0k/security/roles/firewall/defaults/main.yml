@@ -1,0 +1,6 @@
+---
+firewall_disable_ipv6: true
+firewall_incoming_policy: deny
+firewall_outgoing_policy: allow
+firewall_allow_ports:
+  - 22/tcp
