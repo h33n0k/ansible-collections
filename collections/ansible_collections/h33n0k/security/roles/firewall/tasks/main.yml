@@ -1,45 +1,10 @@
 ---
-- name: Ensure UFW is installed
-  ansible.builtin.apt:
-    name:
-      - ufw
-    state: present
-    update_cache: true
+- name: Setup UFW
+  ansible.builtin.include_tasks: ufw.yml
+  tags:
+    - ufw
 
-- name: Set default UFW incoming policy
-  community.general.ufw:
-    direction: incoming
-    policy: deny
-
-- name: Set default UFW outgoing policy
-  community.general.ufw:
-    direction: outgoing
-    policy: allow
-
-- name: Disable IPv6
-  ansible.builtin.lineinfile:
-    path: /etc/default/ufw
-    regexp: '^IPV6='
-    line: 'IPV6=no'
-    create: true
-    backup: true
-    owner: root
-    group: adm
-    mode: '0644'
-
-- name: Allow listed ports through UFW
-  community.general.ufw:
-    rule: allow
-    port: "{{ item.split('/')[0] }}"
-    proto: "{{ item.split('/')[1] }}"
-  loop: '{{ firewall_allow_ports }}'
-
-- name: Activate UFW
-  community.general.ufw:
-    state: enabled
-
-- name: Enable UFW
-  ansible.builtin.systemd:
-    name: ufw
-    state: started
-    enabled: true
+- name: Setup Fail2ban
+  ansible.builtin.include_tasks: fail2ban.yml
+  tags:
+    - fail2ban

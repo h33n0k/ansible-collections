@@ -1,6 +1,12 @@
 ---
+# UFW
 firewall_disable_ipv6: true
 firewall_incoming_policy: deny
 firewall_outgoing_policy: allow
 firewall_allow_ports:
   - 22/tcp
+
+# Fail2ban
+firewall_fail2ban_maxretry: 5
+firewall_fail2ban_bantime: 5d
+firewall_fail2ban_findtime: 2d

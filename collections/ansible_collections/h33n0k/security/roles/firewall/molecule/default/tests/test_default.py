@@ -10,7 +10,7 @@ def AnsibleVars(host):
 
 
 def test_installed_packages(host):
-    packages = ['ufw']
+    packages = ['ufw', 'fail2ban']
     for p in packages:
         package = host.package(p)
         assert package.is_installed, \
@@ -18,7 +18,7 @@ def test_installed_packages(host):
 
 
 def test_enabled_services(host):
-    services = ['ufw']
+    services = ['ufw', 'fail2ban']
     for s in services:
         service = host.service(s)
         assert service.is_running, \
@@ -53,3 +53,18 @@ def test_ufw_allowed_ports(host, AnsibleVars):
     status = host.run('ufw status numbered')
     for port in ports:
         assert port in status.stdout
+
+
+def test_fail2ban_configurations(host):
+    files = [
+        '/etc/fail2ban/jail.local',
+        '/etc/fail2ban/filter.d/common.local'
+    ]
+
+    for f in files:
+        file = host.file(f)
+        assert file.exists, \
+            f'{f} should have been deployed'
+        assert file.user == 'root'
+        assert file.group == 'adm'
+        assert file.mode == 0o644

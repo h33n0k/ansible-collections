@@ -1,0 +1,8 @@
+[DEFAULT]
+allowipv6 = false
+backend = auto
+action = ufw
+banaction_allports = ufw
+maxretry = {{ firewall_fail2ban_maxretry }}
+findtime = {{ firewall_fail2ban_findtime }}
+bantime = {{ firewall_fail2ban_bantime }}
