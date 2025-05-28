@@ -14,6 +14,11 @@
     group: adm
     mode: '0644'
 
+- name: Disable default debian jails
+  ansible.builtin.file:
+    path: /etc/fail2ban/jail.d/defaults-debian.conf
+    state: absent
+
 - name: Setup fail2ban jail
   ansible.builtin.template:
     src: fail2ban/jail.local
