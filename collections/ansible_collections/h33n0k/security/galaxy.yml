@@ -1,0 +1,21 @@
+---
+name: security
+namespace: h33n0k
+version: 0.0.1
+
+repository: 'https://github.com/h33n0k/ansible-collections'
+documentation: 'https://github.com/h33n0k/ansible-collections'
+homepage: 'https://github.com/h33n0k/ansible-collections'
+issues: 'https://github.com/h33n0k/ansible-collections/issues'
+authors:
+  - h33n0k
+license:
+  - MIT
+
+readme: README.md
+description: Configures security settings
+tags:
+  - linux
+  - system
+  - networking
+  - firewall
