@@ -1,0 +1,13 @@
+---
+- name: Prepare
+  hosts: all
+  gather_facts: true
+  become: true
+  tasks:
+    - name: Touch ssh log file
+      ansible.builtin.file:
+        dest: /var/log/auth.log
+        state: touch
+        owner: root
+        group: adm
+        mode: '0640'

@@ -1,0 +1,5 @@
+[DEFAULT]
+__pid_regex = (?:\[\d+\])
+__prefix_regex = \[.*\] \(.*\) [A-Z]*
+
+_deamon = \S+
