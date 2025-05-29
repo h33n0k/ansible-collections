@@ -11,7 +11,7 @@
     dest: /etc/rsyslog.conf
     owner: root
     group: adm
-    mode: '0644'
+    mode: '0640'
 
 - name: Deploy logrotation configuration
   ansible.builtin.template:
@@ -19,7 +19,7 @@
     dest: /etc/logrotate.conf
     owner: root
     group: adm
-    mode: '0644'
+    mode: '0640'
 
 - name: Ensure rsyslog is started and enabled
   ansible.builtin.service:
