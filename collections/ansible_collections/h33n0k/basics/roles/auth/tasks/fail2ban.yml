@@ -23,8 +23,8 @@
 
 - name: Deploy fail2ban filter
   ansible.builtin.template:
-    src: fail2ban/filters/sshd.local
-    dest: /etc/fail2ban/filter.d/sshd.local
+    src: fail2ban/filters/sshd.conf
+    dest: /etc/fail2ban/filter.d/sshd.conf
     owner: root
     group: adm
     mode: '0640'
