@@ -68,3 +68,32 @@ def test_ssh_permissions(host, AnsibleVars):
             assert directory.user == user['username']
             assert directory.group == user['username']
             assert directory.mode == 0o700
+
+
+def test_sshd_service(host):
+    service = host.service('sshd')
+    assert service.is_running
+    assert service.is_enabled
+
+
+def test_fail2ban_jail(host):
+    files = [
+        '/etc/fail2ban/jail.d/sshd.local',
+        '/etc/fail2ban/filter.d/sshd.local'
+    ]
+
+    for f in files:
+        file = host.file(f)
+        assert file.exists
+        assert file.mode == 0o644
+        assert file.user == 'root'
+        assert file.group == 'adm'
+
+    status = host.run('fail2ban-client status')
+    assert 'sshd' in status.stdout
+
+
+def test_fail2ban_service(host):
+    service = host.service('fail2ban')
+    assert service.is_running
+    assert service.is_enabled

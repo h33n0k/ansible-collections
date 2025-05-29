@@ -1,0 +1,37 @@
+[INCLUDES]
+before = common.local
+
+[DEFAULT]
+_deamon = sshd
+_prefix = %(__prefix_regex)s %(_deamon)s%(__pid_regex)s:(?: (error):)?
+_suffix = (?: (?:port \d+|on \S+|\[preauth\])){0,3}\s*
+
+_port_opt = (?: (?:port \d+|on \S+)){0,2}
+_authng_user = (?: (?:by|from))?(?: (?:invalid|authenticating) user <F-USER>\S+|.*?</F-USER>)?(?: from)?
+_alg_match = (?:(?:\w+ (?!found\b)){0,2}\w+)
+
+
+[Definition]
+authfail = ^%(_prefix)s (?:Connection (?:closed|reset)|Disconnect(?:ed|ing))%(_authng_user)s <HOST>(%(_suffix)s|%(_port_opt)s: (Too many authentication failures \[preauth\]))$
+           ^%(_prefix)s User <F-USER>\S+|.*?</F-USER> (?:from )?<HOST> not allowed because not listed in AllowUsers%(_suffix)s$
+					 ^%(_prefix)s User <F-USER>\S+|.*?</F-USER> (?:from )?<HOST> not allowed because listed in DenyUsers%(_suffix)s$
+					 ^%(_prefix)s User <F-USER>\S+|.*?</F-USER> (?:from )?<HOST> not allowed because not in any group%(_suffix)s$
+					 ^%(_prefix)s User <F-USER>\S+|.*?</F-USER> (?:from )?<HOST> not allowed because a group is listed in DenyGroups%(_suffix)s$
+					 ^%(_prefix)s User <F-USER>\S+|.*?</F-USER> (?:from )?<HOST> not allowed because none of user's groups are listed in AllowGroups%(_suffix)s$
+					 ^%(_prefix)s refused connect from \S+ \(<HOST>\)
+					 ^%(_prefix)s [iI](?:llegal|nvalid) user <F-USER>.*?</F-USER> (?:from )?<HOST>%(_suffix)s$
+					 ^%(_prefix)s maximum authentication attempts exceeded for (?:invalid user )?<F-USER>.*?</F-USER> (?:from )?<HOST>%(_port_opt)s(?: ssh\d*)?%(_suffix)s$
+
+extra = ^%(_prefix)s Unable to negotiate with <HOST>%(_port_opt)s: no matching %(_alg_match)s found\.
+
+ddos = ^%(_prefix)s (?:banner exchange|ssh_dispatch_run_fatal): Connection from <HOST>%(_port_opt)s: (?:could not read protocol version|invalid format|(?:message authentication code incorrect|[Cc]onnection corrupted) \[preauth\])
+       ^%(_prefix)s Received disconnect from <HOST>%(_port_opt)s
+
+
+failregex = %(authfail)s
+            %(extra)s
+						%(ddos)s
+
+ignoreregex = ^%(_prefix)s Disconnected from user <F-USER>\S+|.*?</F-USER> \S+%(_port_opt)s$
+              ^%(_prefix)s Accepted publickey for <F-USER>\S+|.*?</F-USER> from \S+%(_port_opt)s(?: ssh\d*)?: .*$$
+
