@@ -6,14 +6,14 @@
   vars_files:
     - vars.yml
   tasks:
-    - name: Update apt package cache
+    - name: Install dependencies
       ansible.builtin.apt:
+        name:
+          - rsyslog
         update_cache: true
 
-    - name: Create rsyslog config directory
-      ansible.builtin.file:
-        dest: /etc/rsyslog.d
-        state: directory
-        owner: root
-        group: adm
-        mode: '0644'
+    - name: Ensure rsyslog is started and enabled
+      ansible.builtin.service:
+        name: rsyslog
+        state: started
+        enabled: true

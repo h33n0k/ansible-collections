@@ -27,8 +27,12 @@
     group: adm
     mode: '0644'
 
-- name: Enable fail2ban
+- name: Ensure fail2ban is enabled
+  ansible.builtin.systemd:
+    name: fail2ban
+    enabled: true
+
+- name: Ensure fail2ban is started
   ansible.builtin.systemd:
     name: fail2ban
     state: started
-    enabled: true

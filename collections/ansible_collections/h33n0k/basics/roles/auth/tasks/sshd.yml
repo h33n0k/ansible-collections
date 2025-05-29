@@ -33,3 +33,4 @@
     mode: '0700'
   loop: '{{ auth_users }}'
   when: "'ssh' in item.groups"
+  notify: Restart sshd
