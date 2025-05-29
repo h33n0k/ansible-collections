@@ -1,0 +1,21 @@
+---
+- name: Ensure ssh group exists
+  ansible.builtin.group:
+    name: ssh
+    gid: '{{ auth_ssh_group_gid }}'
+    state: present
+
+- name: Setup Users
+  ansible.builtin.include_tasks: users.yml
+  tags:
+    - users
+
+- name: Setup SSH server
+  ansible.builtin.include_tasks: sshd.yml
+  tags:
+    - sshd
+
+- name: Setup fail2ban jails
+  ansible.builtin.include_tasks: fail2ban.yml
+  tags:
+    - fail2ban

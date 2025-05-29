@@ -1,0 +1,36 @@
+---
+- name: Ensure openssh is installed
+  ansible.builtin.apt:
+    name:
+      - openssh-server
+    state: present
+    update_cache: true
+
+- name: Deploy rsyslog sshd log configuration
+  ansible.builtin.template:
+    src: rsyslog/sshd.conf
+    dest: /etc/rsyslog.d/sshd.conf
+    owner: root
+    group: adm
+    mode: '0640'
+  notify: Restart rsyslog
+
+- name: Deploy SSH Configuration
+  ansible.builtin.template:
+    src: sshd/sshd_config
+    dest: /etc/ssh/sshd_config
+    owner: root
+    group: adm
+    mode: '0640'
+  notify: Restart sshd
+
+- name: Setup SSH config permissions
+  ansible.builtin.file:
+    path: '/home/{{ item.username }}/.ssh'
+    state: directory
+    owner: '{{ item.username }}'
+    group: '{{ item.username }}'
+    mode: '0700'
+  loop: '{{ auth_users }}'
+  when: "'ssh' in item.groups"
+  notify: Restart sshd

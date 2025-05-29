@@ -17,7 +17,7 @@ def test_rsyslog_conf_permissions(host):
 
     assert file.user == 'root'
     assert file.group == 'adm'
-    assert file.mode == 0o644
+    assert file.mode == 0o640
 
 
 # Ensure the rsyslog service is enabled and started
@@ -65,7 +65,7 @@ def test_logrotate_conf_permissions(host):
         'logrotate configuration should exist'
     assert file.user == 'root'
     assert file.group == 'adm'
-    assert file.mode == 0o644
+    assert file.mode == 0o640
 
 
 def test_logrotate_status(host):

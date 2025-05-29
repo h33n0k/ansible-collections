@@ -1,0 +1,19 @@
+---
+- name: Prepare
+  hosts: all
+  gather_facts: false
+  become: true
+  vars_files:
+    - vars.yml
+  tasks:
+    - name: Install dependencies
+      ansible.builtin.apt:
+        name:
+          - rsyslog
+        update_cache: true
+
+    - name: Ensure rsyslog is started and enabled
+      ansible.builtin.service:
+        name: rsyslog
+        state: started
+        enabled: true

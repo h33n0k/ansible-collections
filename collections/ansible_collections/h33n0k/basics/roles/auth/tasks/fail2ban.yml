@@ -1,0 +1,31 @@
+---
+- name: Deploy fail2ban jail
+  ansible.builtin.template:
+    src: fail2ban/jails/sshd.local
+    dest: /etc/fail2ban/jail.d/sshd.local
+    owner: root
+    group: adm
+    mode: '0640'
+
+- name: Check if log file exists
+  ansible.builtin.stat:
+    path: /var/log/sshd.log
+  register: sshd_log_stat
+
+- name: Create log file
+  ansible.builtin.file:
+    path: /var/log/sshd.log
+    state: touch
+    owner: root
+    group: adm
+    mode: '0640'
+  when: not sshd_log_stat.stat.exists
+
+- name: Deploy fail2ban filter
+  ansible.builtin.template:
+    src: fail2ban/filters/sshd.conf
+    dest: /etc/fail2ban/filter.d/sshd.conf
+    owner: root
+    group: adm
+    mode: '0640'
+  notify: Restart fail2ban

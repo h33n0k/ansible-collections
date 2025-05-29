@@ -1,0 +1,7 @@
+---
+- name: Converge
+  hosts: all
+  gather_facts: true
+  become: true
+  roles:
+    - h33n0k.security.firewall

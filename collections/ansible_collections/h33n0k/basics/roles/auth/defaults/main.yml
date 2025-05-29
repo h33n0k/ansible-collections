@@ -1,0 +1,15 @@
+---
+auth_ssh_group_gid: 1022
+
+# Users
+auth_users:
+  - username: h33n0k
+    home: true
+    groups:
+      - sudo
+      - adm
+      - ssh
+
+# SSH
+auth_sshd_port: 22
+auth_sshd_permit_root: false

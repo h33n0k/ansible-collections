@@ -1,0 +1,17 @@
+---
+galaxy_info:
+  role_name: auth
+  author: h33n0k
+  license: MIT
+
+  description: Configure users and authentification
+  galaxy_tags:
+    - auth
+    - security
+
+  min_ansible_version: '2.12'
+  platforms:
+    - name: Debian
+      versions:
+        - bookworm
+        - bullseye
