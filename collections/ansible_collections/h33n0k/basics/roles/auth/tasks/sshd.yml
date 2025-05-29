@@ -12,7 +12,7 @@
     dest: /etc/rsyslog.d/sshd.conf
     owner: root
     group: adm
-    mode: '0644'
+    mode: '0640'
   notify: Restart rsyslog
 
 - name: Deploy SSH Configuration
@@ -21,7 +21,7 @@
     dest: /etc/ssh/sshd_config
     owner: root
     group: adm
-    mode: '0644'
+    mode: '0640'
   notify: Restart sshd
 
 - name: Setup SSH config permissions

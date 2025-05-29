@@ -67,4 +67,4 @@ def test_fail2ban_configurations(host):
             f'{f} should have been deployed'
         assert file.user == 'root'
         assert file.group == 'adm'
-        assert file.mode == 0o644
+        assert file.mode == 0o640

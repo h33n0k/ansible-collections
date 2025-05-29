@@ -12,7 +12,7 @@
     dest: /etc/fail2ban/filter.d/common.local
     owner: root
     group: adm
-    mode: '0644'
+    mode: '0640'
 
 - name: Disable default debian jails
   ansible.builtin.file:
@@ -25,7 +25,7 @@
     dest: /etc/fail2ban/jail.local
     owner: root
     group: adm
-    mode: '0644'
+    mode: '0640'
 
 - name: Ensure fail2ban is enabled
   ansible.builtin.systemd:

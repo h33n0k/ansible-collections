@@ -47,7 +47,7 @@ def test_ssh_rsyslog(host):
         'rsyslog configuration should have been deployed.'
     assert file.user == 'root'
     assert file.group == 'adm'
-    assert file.mode == 0o644
+    assert file.mode == 0o640
 
 
 def test_sshd_config(host):
@@ -56,7 +56,7 @@ def test_sshd_config(host):
         'sshd configuration should have been deployed.'
     assert file.user == 'root'
     assert file.group == 'adm'
-    assert file.mode == 0o644
+    assert file.mode == 0o640
 
 
 def test_ssh_permissions(host, AnsibleVars):
@@ -85,7 +85,7 @@ def test_fail2ban_jail(host):
     for f in files:
         file = host.file(f)
         assert file.exists
-        assert file.mode == 0o644
+        assert file.mode == 0o640
         assert file.user == 'root'
         assert file.group == 'adm'
 
