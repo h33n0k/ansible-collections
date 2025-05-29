@@ -79,7 +79,7 @@ def test_sshd_service(host):
 def test_fail2ban_jail(host):
     files = [
         '/etc/fail2ban/jail.d/sshd.local',
-        '/etc/fail2ban/filter.d/sshd.local'
+        '/etc/fail2ban/filter.d/sshd.conf'
     ]
 
     for f in files:
