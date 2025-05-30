@@ -9,6 +9,7 @@ auth_users:
       - sudo
       - adm
       - ssh
+      - docker
 
 # SSH
 auth_sshd_port: 22

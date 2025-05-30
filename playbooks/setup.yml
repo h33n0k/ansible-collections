@@ -8,4 +8,5 @@
     - h33n0k.basics.time
     - h33n0k.basics.logging
     - h33n0k.security.firewall
+    - h33n0k.tools.docker
     - h33n0k.basics.auth
