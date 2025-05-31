@@ -4,6 +4,7 @@
     name:
       - rsyslog
     state: present
+    update_cache: true
 
 - name: Deploy rsyslog configuration
   ansible.builtin.template:
