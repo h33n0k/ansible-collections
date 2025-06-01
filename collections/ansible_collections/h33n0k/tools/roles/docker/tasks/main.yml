@@ -67,6 +67,14 @@
       - docker-compose-plugin
     update_cache: true
 
+- name: Deploy Docker daemon.json
+  ansible.builtin.template:
+    src: daemon.json
+    dest: /etc/docker/daemon.json
+    owner: root
+    group: adm
+    mode: '0660'
+
 - name: Ensure Docker is started and enabled
   ansible.builtin.systemd:
     name: docker
