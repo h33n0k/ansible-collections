@@ -66,3 +66,11 @@ def test_daemon_template(host, AnsibleVars):
     for key in options.keys():
         assert key in content
         assert content[key] == options[key]
+
+
+def test_compose_config(host):
+    directory = host.file('/etc/opt/docker/compose')
+    assert directory.exists
+    assert directory.is_directory
+    assert directory.user == 'root'
+    assert directory.group == 'docker'

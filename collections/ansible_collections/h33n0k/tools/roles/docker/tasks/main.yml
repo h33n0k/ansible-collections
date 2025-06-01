@@ -75,6 +75,14 @@
     group: adm
     mode: '0660'
 
+- name: Create compose config directory
+  ansible.builtin.file:
+    path: /etc/opt/docker/compose
+    state: directory
+    owner: root
+    group: docker
+    mode: '0770'
+
 - name: Ensure Docker is started and enabled
   ansible.builtin.systemd:
     name: docker
