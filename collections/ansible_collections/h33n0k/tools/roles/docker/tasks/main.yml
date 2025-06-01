@@ -12,12 +12,27 @@
   ansible.builtin.set_fact:
     docker_arch: '{{ docker_arch_map[ansible_architecture] | default(ansible_architecture) }}'
 
+- name: Debug Docker architecture
+  ansible.builtin.debug:
+    msg: '{{ docker_arch }}'
+
+- name: Get codename
+  ansible.builtin.shell: |
+    set -o pipefail
+    lsb_release -c | awk '{print $2}'
+  register: codename
+  changed_when: false
+
+- name: Debug Debian Codename
+  ansible.builtin.debug:
+    msg: '{{ codename.stdout }}'
+
 - name: Define Docker apt repository
   ansible.builtin.set_fact:
-    docker_repo: 'deb [arch={{ docker_arch }} signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/debian {{ ansible_lsb.codename | default("bookworm") }} stable'
+    docker_repo: 'deb [arch={{ docker_arch }} signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/debian {{ codename.stdout | default("bookworm") }} stable'
 
-- name: debug
-  debug:
+- name: Debug Docker apt source
+  ansible.builtin.debug:
     msg: '{{ docker_repo }}'
 
 - name: Create directory for Docker keyrings
