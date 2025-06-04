@@ -1,12 +1,15 @@
 ---
-- name: Basic setup
+- name: Init Setup
   hosts: all
   become: true
   collections:
     - h33n0k.basics
+    - h33n0k.tools
   roles:
     - h33n0k.basics.time
     - h33n0k.basics.logging
     - h33n0k.security.firewall
-    - h33n0k.tools.docker
+    - name: h33n0k.tools.docker
+      docker_install: true
+    # - h33n0k.tools.cron
     - h33n0k.basics.auth

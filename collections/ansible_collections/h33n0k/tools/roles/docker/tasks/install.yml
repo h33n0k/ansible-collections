@@ -1,0 +1,92 @@
+---
+- name: Install dependencies
+  ansible.builtin.apt:
+    name:
+      - ca-certificates
+      - gnupg
+      - lsb-release
+    state: present
+    update_cache: true
+
+- name: Map ansible_architecture to Docker arch
+  ansible.builtin.set_fact:
+    docker_arch: '{{ docker_arch_map[ansible_architecture] | default(ansible_architecture) }}'
+
+- name: Debug Docker architecture
+  ansible.builtin.debug:
+    msg: '{{ docker_arch }}'
+
+- name: Get codename
+  ansible.builtin.shell: |
+    set -o pipefail
+    lsb_release -c | awk '{print $2}'
+  args:
+    executable: /bin/bash
+  register: codename
+  changed_when: false
+
+- name: Debug Debian Codename
+  ansible.builtin.debug:
+    msg: '{{ codename.stdout }}'
+
+- name: Define Docker apt repository
+  ansible.builtin.set_fact:
+    docker_repo: 'deb [arch={{ docker_arch }} signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/debian {{ codename.stdout | default("bookworm") }} stable'
+
+- name: Debug Docker apt source
+  ansible.builtin.debug:
+    msg: '{{ docker_repo }}'
+
+- name: Create directory for Docker keyrings
+  ansible.builtin.file:
+    path: /etc/apt/keyrings
+    state: directory
+    owner: root
+    group: adm
+    mode: '0655'
+
+- name: Download Docker GPG key
+  ansible.builtin.get_url:
+    url: https://download.docker.com/linux/debian/gpg
+    dest: /etc/apt/keyrings/docker.asc
+    owner: root
+    group: adm
+    mode: '0644'
+
+- name: Add Docker apt repository
+  ansible.builtin.apt_repository:
+    repo: '{{ docker_repo }}'
+    filename: docker
+    state: present
+
+- name: Install Docker
+  ansible.builtin.apt:
+    name:
+      - docker-ce
+      - docker-ce-cli
+      - containerd.io
+      - docker-buildx-plugin
+      - docker-compose-plugin
+    update_cache: true
+
+- name: Deploy Docker daemon.json
+  ansible.builtin.template:
+    src: daemon.json
+    dest: /etc/docker/daemon.json
+    owner: root
+    group: adm
+    mode: '0660'
+
+- name: Create compose config directory
+  ansible.builtin.file:
+    path: /etc/opt/docker/compose
+    state: directory
+    owner: root
+    group: docker
+    mode: '0770'
+
+- name: Ensure Docker is started and enabled
+  ansible.builtin.systemd:
+    name: docker
+    state: started
+    enabled: true
