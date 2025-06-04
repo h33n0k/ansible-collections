@@ -4,3 +4,9 @@
   tags:
     - install
   when: docker_install | default(false)
+
+- name: Run Container
+  ansible.builtin.include_tasks: run.yml
+  tags:
+    - run
+  when: docker_run is defined
