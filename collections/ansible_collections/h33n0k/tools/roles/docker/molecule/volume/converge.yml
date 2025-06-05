@@ -1,0 +1,16 @@
+---
+- name: Converge
+  hosts: all
+  gather_facts: true
+  become: true
+  vars_files:
+    - ./defaults/main.yml
+  tasks:
+
+    - name: Include Volume task
+      ansible.builtin.include_tasks: ../../tasks/volume.yml
+      vars:
+        volume: '{{ item }}'
+      loop: '{{ docker_volumes }}'
+      loop_control:
+        label: '{{ item.host }}'

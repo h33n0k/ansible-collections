@@ -1,0 +1,10 @@
+---
+docker_volumes:
+  - host: /etc/opt/service
+    container: /etc/service
+    type: directory
+    group: adm
+  - host: /var/opt/service/data.txt
+    container: /var/service/data.txt
+    type: file
+    group: docker
