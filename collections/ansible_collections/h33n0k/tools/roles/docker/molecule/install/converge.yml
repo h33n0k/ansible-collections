@@ -4,5 +4,5 @@
   gather_facts: true
   become: true
   roles:
-    - name: h33n0k.tools.docker
+    - role: h33n0k.tools.docker
       docker_install: true
