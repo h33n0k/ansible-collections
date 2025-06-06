@@ -5,8 +5,15 @@
       - ca-certificates
       - gnupg
       - lsb-release
+      - acl
     state: present
     update_cache: true
+
+- name: Ensure requests module is installed
+  ansible.builtin.pip:
+    name:
+      - requests
+    state: present
 
 - name: Map ansible_architecture to Docker arch
   ansible.builtin.set_fact:

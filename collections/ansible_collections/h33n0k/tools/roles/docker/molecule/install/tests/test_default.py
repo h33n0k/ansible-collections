@@ -19,12 +19,18 @@ def test_packages_installation(host):
         'docker-ce-cli',
         'containerd.io',
         'docker-buildx-plugin',
-        'docker-compose-plugin'
+        'docker-compose-plugin',
+        'acl'
     ]
 
     for p in packages:
         package = host.package(p)
         assert package.is_installed
+
+    pip_packages = ['requests']
+    for p in pip_packages:
+        cmd = host.run(f"python3 -c 'import {p}'")
+        assert cmd.rc == 0, f'pip module {p} is not installed'
 
 
 def test_docker_key(host):
