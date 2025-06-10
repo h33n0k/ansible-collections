@@ -1,0 +1,16 @@
+---
+- name: Prepare
+  hosts: all
+  gather_facts: true
+  become: true
+  roles:
+    - role: h33n0k.tools.docker
+      vars:
+        docker_install: true
+
+  tasks:
+    - name: Install curl
+      ansible.builtin.apt:
+        name:
+          - curl
+        state: present

@@ -1,0 +1,23 @@
+---
+- name: Converge
+  hosts: all
+  gather_facts: true
+  become: true
+  vars_files:
+    - ./defaults/main.yml
+  roles:
+
+    - role: h33n0k.tools.docker
+      ansible.builtin.include_tasks: ../../tasks/run.yml
+      vars:
+        docker_run: '{{ docker_container }}'
+        docker_install: false
+
+  tasks:
+    - name: Copy content
+      ansible.builtin.copy:
+        dest: '{{ docker_container.volumes[0].host }}/index.html'
+        content: '<p>Hello World</p>'
+        owner: root
+        group: docker
+        mode: '0660'

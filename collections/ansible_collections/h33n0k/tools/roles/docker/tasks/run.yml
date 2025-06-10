@@ -8,6 +8,7 @@
   loop: '{{ docker_run.volumes }}'
   loop_control:
     label: '{{ item.host }}'
+  when: docker_run.volumes_setup | default(true)
 
 - name: Build Docker volume list
   ansible.builtin.set_fact:
@@ -16,3 +17,40 @@
   loop: '{{ docker_run.volumes }}'
   loop_control:
     label: '{{ item.host }}'
+
+- name: Ensure Docker networks exists
+  community.docker.docker_network:
+    name: '{{ item.name }}'
+    driver: "{{ item.driver | default('default') }}"
+    ipam_config: '{{ item.ipam_config }}'
+  loop: '{{ docker_run.networks }}'
+  loop_control:
+    label: '{{ item.name }}'
+
+- name: Build Docker network list
+  set_fact:
+    networks_specs: >-
+      {{ networks_specs | default([]) + [{ 'name': item.name }] }}
+  loop: '{{ docker_run.networks }}'
+  loop_control:
+    label: '{{ item.name }}'
+
+- name: Build Container Specs
+  ansible.builtin.set_fact:
+    container_specs:
+      name: '{{ docker_run.name }}'
+      image: '{{ docker_run.image }}'
+      published_ports: '{{ docker_run.ports }}'
+      restart_policy: "{{ docker_run.restart | default('unless-stopped') }}"
+      env: '{{ docker_run.env | default({}) }}'
+      state: started
+      volumes: '{{ volumes_specs }}'
+      networks: '{{ networks_specs }}'
+      user: '0:0'
+
+- name: Setup Docker Container
+  ansible.builtin.debug:
+    msg: '{{ container_specs }}'
+
+- name: Start Container
+  community.docker.docker_container: '{{ container_specs }}'
