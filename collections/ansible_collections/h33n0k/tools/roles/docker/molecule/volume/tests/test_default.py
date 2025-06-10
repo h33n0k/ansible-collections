@@ -28,18 +28,26 @@ def test_mounted_volumes(host, AnsibleVars):
         assert vol.exists
         assert vol.user == 'root'
         assert vol.group == group
-        assert oct(vol.mode) == '0o2770'
 
         if volume['type'] == 'directory':
             assert vol.is_directory
-
-        expected_acls = [
-            'user::rwx',
-            'user:root:rwx',
-            'group::rwx',
-            f'group:{group}:rwx',
-            'other::---'
-        ]
+            assert oct(vol.mode) == '0o2770'
+            expected_acls = [
+                'user::rwx',
+                'user:root:rwx',
+                'group::rwx',
+                f'group:{group}:rwx',
+                'other::---'
+            ]
+        else:
+            assert oct(vol.mode) == '0o660'
+            expected_acls = [
+                'user::rw',
+                'user:root:rw',
+                'group::rw',
+                f'group:{group}:rw',
+                'other::---'
+            ]
 
         getfacl = host.run(f"getfacl -p {volume['host']}")
         assert getfacl.rc == 0
@@ -49,3 +57,26 @@ def test_mounted_volumes(host, AnsibleVars):
             assert acl in getfacl.stdout
             if volume['type'] == 'directory':
                 assert f'{default_prefix}{acl}' in getfacl.stdout
+
+
+def test_actl_mask(host, AnsibleVars):
+    volumes = AnsibleVars.get('docker_volumes')
+    directories = list(filter(lambda x: x.get('type') == 'directory', volumes))
+    for volume in directories:
+        f = f'{volume.get("host")}/testfile.txt'
+        f_command = host.run(f'touch {f}')
+        assert f_command.rc == 0
+        file = host.file(f)
+        assert file.exists
+        assert file.user == 'root'
+        assert file.group == volume.get('group', 'docker')
+        assert oct(file.mode) == '0o660'
+
+        d = f'{volume.get("host")}/testDir'
+        d_command = host.run(f'mkdir {d}')
+        assert d_command.rc == 0
+        dir = host.file(d)
+        assert dir.exists
+        assert dir.user == 'root'
+        assert dir.group == volume.get('group', 'docker')
+        assert oct(dir.mode) == '0o2770'

@@ -6,16 +6,16 @@
     recurse: false
     owner: root
     group: docker
-    mode: '2770'
+    mode: '02770'
 
 - name: Ensure Volume (directory) exist on host
   ansible.builtin.file:
     path: '{{ volume.host }}'
     state: directory
-    recurse: true
+    recurse: false
     owner: root
     group: "{{ item.group | default('docker') }}"
-    mode: '2770'
+    mode: '02770'
   when: item.type == 'directory'
 
 - name: Check if volume exists on host
@@ -30,7 +30,7 @@
     state: touch
     owner: root
     group: "{{ item.group | default('docker') }}"
-    mode: '2770'
+    mode: '0660'
   when: item.type == 'file' and not file_exists.stat.exists
 
 - name: Ensure Volume has correct ACL
@@ -42,10 +42,11 @@
     permissions: '{{ acl_entry.perms }}'
     state: present
   loop:
-    - { type: user, entity: root, perms: 'rwx' }
-    - { type: group, entity: root, perms: 'rwx' }
+    - { type: user, entity: root, perms: "rw{{ 'x' if volume.type == 'directory' else '' }}" }
+    - { type: group, entity: root, perms: "rw{{ 'x' if volume.type == 'directory' else '' }}" }
     - { type: other, entity: '', perms: '---' }
-    - { type: group, entity: "{{ volume.group | default('docker') }}", perms: 'rwx' }
+    - { type: group, entity: "{{ volume.group | default('docker') }}", perms: "rw{{ 'x' if volume.type == 'directory' else '' }}" }
+    - { type: mask,  entity: '',   perms: "rw{{ 'x' if volume.type == 'directory' else '' }}" }
   loop_control:
     loop_var: acl_entry
     label: '{{ acl_entry.type }}:{{ acl_entry.entity | default("::") }}'
