@@ -25,3 +25,16 @@
           driver: bridge
           ipam_config:
             - subnet: 192.168.10.0/24
+
+- name: Wait for API
+  ansible.builtin.uri:
+    url: 'http://localhost:81/api/'
+    method: GET
+    headers:
+      Content-Type: 'application/json'
+    return_content: true
+    status_code: 200
+  register: health
+  until: health.status == 200 and (health.content | from_json).status == 'OK'
+  retries: 10
+  delay: 20
