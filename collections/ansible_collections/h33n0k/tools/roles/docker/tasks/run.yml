@@ -5,7 +5,7 @@
     - volume
   vars:
     volume: '{{ item }}'
-  loop: '{{ docker_run.volumes }}'
+  loop: '{{ docker_run.volumes | default([]) }}'
   loop_control:
     label: '{{ item.host }}'
   when: docker_run.volumes_setup | default(true)
@@ -14,7 +14,7 @@
   ansible.builtin.set_fact:
     volumes_specs: >-
       {{ volumes_specs | default([]) + [item.host + ':' + item.container + ':' + (item.access | default('rw'))] }}
-  loop: '{{ docker_run.volumes }}'
+  loop: '{{ docker_run.volumes | default([]) }}'
   loop_control:
     label: '{{ item.host }}'
 
@@ -28,7 +28,7 @@
     label: '{{ item.name }}'
 
 - name: Build Docker network list
-  set_fact:
+  ansible.builtin.set_fact:
     networks_specs: >-
       {{ networks_specs | default([]) + [{ 'name': item.name }] }}
   loop: '{{ docker_run.networks }}'
@@ -44,7 +44,7 @@
       restart_policy: "{{ docker_run.restart | default('unless-stopped') }}"
       env: '{{ docker_run.env | default({}) }}'
       state: started
-      volumes: '{{ volumes_specs }}'
+      volumes: '{{ volumes_specs | default([]) }}'
       networks: '{{ networks_specs }}'
       user: '0:0'
 
