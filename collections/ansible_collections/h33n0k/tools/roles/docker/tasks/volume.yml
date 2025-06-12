@@ -46,7 +46,7 @@
     - { type: group, entity: root, perms: "rw{{ 'x' if volume.type == 'directory' else '' }}" }
     - { type: other, entity: '', perms: '---' }
     - { type: group, entity: "{{ volume.group | default('docker') }}", perms: "rw{{ 'x' if volume.type == 'directory' else '' }}" }
-    - { type: mask,  entity: '',   perms: "rw{{ 'x' if volume.type == 'directory' else '' }}" }
+    - { type: mask, entity: '', perms: "rw{{ 'x' if volume.type == 'directory' else '' }}" }
   loop_control:
     loop_var: acl_entry
     label: '{{ acl_entry.type }}:{{ acl_entry.entity | default("::") }}'

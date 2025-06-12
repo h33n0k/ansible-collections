@@ -30,7 +30,7 @@
 - name: Build Docker network list
   ansible.builtin.set_fact:
     networks_specs: >-
-      {{ networks_specs | default([]) + [{ 'name': item.name }] }}
+      {{ networks_specs | default([]) + [{'name': item.name}] }}
   loop: '{{ docker_run.networks }}'
   loop_control:
     label: '{{ item.name }}'
@@ -53,4 +53,13 @@
     msg: '{{ container_specs }}'
 
 - name: Start Container
-  community.docker.docker_container: '{{ container_specs }}'
+  community.docker.docker_container:
+    name: '{{ container_specs.name }}'
+    state: '{{ container_specs.state }}'
+    image: '{{ container_specs.image }}'
+    restart_policy: '{{ container_specs.restart_policy }}'
+    env: '{{ container_specs.env }}'
+    user: '{{ container_specs.user }}'
+    networks: '{{ container_specs.networks }}'
+    volumes: '{{ container_specs.volumes }}'
+    published_ports: '{{ container_specs.published_ports }}'
