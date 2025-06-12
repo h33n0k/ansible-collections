@@ -2,8 +2,9 @@
 - name: Setup NGINX PROXY MANAGER Docker Container
   ansible.builtin.include_role:
     name: h33n0k.tools.docker
+    tasks_from: run
   vars:
-    docker_run:
+    container:
       env:
         USER_ID: '0'
         GROUP_ID: '4'

@@ -7,8 +7,10 @@
     - ./defaults/main.yml
   tasks:
 
-    - name: Include Volume task
-      ansible.builtin.include_tasks: ../../tasks/volume.yml
+    - name: Setup Volumes
+      ansible.builtin.include_role:
+        name: h33n0k.tools.docker
+        tasks_from: volume
       vars:
         volume: '{{ item }}'
       loop: '{{ docker_volumes }}'

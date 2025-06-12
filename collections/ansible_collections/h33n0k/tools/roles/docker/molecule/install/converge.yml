@@ -3,6 +3,9 @@
   hosts: all
   gather_facts: true
   become: true
-  roles:
-    - role: h33n0k.tools.docker
-      docker_install: true
+  tasks:
+
+    - name: Install Docker
+      ansible.builtin.include_role:
+        name: h33n0k.tools.docker
+        tasks_from: install
