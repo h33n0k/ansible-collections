@@ -38,3 +38,27 @@
   until: health.status == 200 and (health.content | from_json).status == 'OK'
   retries: 10
   delay: 20
+
+# Update Default User
+- name: Generate Token for default User
+  ansible.builtin.include_tasks: token.yml
+  vars:
+    nginx_proxy_manager_users:
+      - email: '{{ nginx_proxy_manager_default_email }}'
+        password: '{{ nginx_proxy_manager_default_password }}'
+  when: nginx_proxy_manager_setup_update_default_user
+
+- name: Update Default User
+  ansible.builtin.include_tasks: user.yml
+  vars:
+    nginx_proxy_manager_user:
+      action: update
+      id: 1
+      name: '{{ nginx_proxy_manager_users[0].name }}'
+      nickname: '{{ nginx_proxy_manager_users[0].nickname }}'
+      email: '{{ nginx_proxy_manager_users[0].email }}'
+      roles: '{{ nginx_proxy_manager_users[0].roles }}'
+      password:
+        current: '{{ nginx_proxy_manager_default_password }}'
+        new: '{{ nginx_proxy_manager_users[0].password }}'
+  when: nginx_proxy_manager_setup_update_default_user
