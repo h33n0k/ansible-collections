@@ -1,6 +1,0 @@
----
-- name: Setup NGINX PROXY MANAGER
-  ansible.builtin.include_tasks: setup.yml
-  tags:
-    - setup
-  when: nginx_proxy_manager_setup | default(false)

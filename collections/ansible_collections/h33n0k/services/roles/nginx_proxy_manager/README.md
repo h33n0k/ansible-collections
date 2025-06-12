@@ -58,14 +58,6 @@ This role installs and configures NPM inside a Docker container using the unoffi
 | `nginx_proxy_manager_default_email`    | `admin@example.com` | Default admin email used at first launch    |
 | `nginx_proxy_manager_default_password` | `changeme`          | Default admin password used at first launch |
 
-### Service Setup
-
-| Variable                                        | Default | Description                                                                                         |
-| ----------------------------------------------- | ------- | --------------------------------------------------------------------------------------------------- |
-| `nginx_proxy_manager_setup`                     | `false` | Whether to setup and deploy the NPM container                                                       |
-| `nginx_proxy_manager_setup_users`               | `true`  | Whether to create or update user accounts                                                           |
-| `nginx_proxy_manager_setup_update_default_user` | `true`  | Whether to replace the default admin@example.com with the first user in `nginx_proxy_manager_users` |
-
 #### User Definitions
 
 ```yaml
@@ -86,29 +78,10 @@ Each user requires:
 * `roles` (`[admin]` or undefined)
 * `password` (Clear text password)
 
-> 🔐 Store credentials in a vaulted file (e.g. group_vars/all/vault.yml) using ansible-vault for production deployments.
+> 🔐 Store credentials in a vaulted file (e.g. group_vars/all/secrets.yml) using ansible-vault for production deployments.
 
 ## Example Playbook
-```yaml
----
-- name: Setup NGINX PROXY MANAGER
-  hosts: all
-  become: true
-  collections:
-    - h33n0k.services
-  roles:
-    - name: h33n0k.services.nginx_proxy_manager
-      nginx_proxy_manager_setup: true
-      nginx_proxy_manager_setup_users: true
-      nginx_proxy_manager_setup_update_default_user: true
-      nginx_proxy_manager_users:
-        - name: 'John Doe'
-          nickname: 'superadmin'
-          email: 'johndoe@gmail.com'
-          roles:
-            - admin
-          password: 'mysuperpassword'
-```
+[./playbooks/nginx-proxy-manager.yml](/playbooks/nginx-proxy-manager.yml)
 
 ## Notes on API Usage
 The NPM UI runs on top of an internal REST API, though it is not officially documented.
