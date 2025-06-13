@@ -14,14 +14,25 @@
         name: h33n0k.services.nginx_proxy_manager
         tasks_from: setup
 
-    - name: Generate Token
-      ansible.builtin.include_role:
-        name: h33n0k.services.nginx_proxy_manager
-        tasks_from: token
-      vars:
-        nginx_proxy_manager_users:
-          - email: admin@example.com
-            password: changeme
+    - name: Update Default User
+      block:
+        - name: Generate Token
+          ansible.builtin.include_role:
+            name: h33n0k.services.nginx_proxy_manager
+            tasks_from: token
+          vars:
+            nginx_proxy_manager_users:
+              - email: admin@example.com
+                password: changeme
+      rescue:
+        - name: Skip next task - token generation failed
+          set_fact:
+            token_generated: false
+      always:
+        - name: Set flag if token generation succeeded
+          set_fact:
+            token_generated: true
+          when: ansible_failed_result is not defined
 
     - name: Update Default User
       ansible.builtin.include_role:
@@ -40,3 +51,4 @@
       loop: '{{ nginx_proxy_manager_users[:1] }}' # First Defined User
       loop_control:
         label: '{{ item.name }}'
+      when: token_generated
