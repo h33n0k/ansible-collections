@@ -31,8 +31,8 @@ This role installs and configures NPM inside a Docker container using the unoffi
 - "/var/log/nginx‑proxy‑manager:/config/logs:rw"
 - "/etc/opt/nginx‑proxy‑manager:/config:rw"
 ```
-- Initializes NPM with custom admin credentials by replacing the default admin@example.com
-- Supports secure user management via `nginx_proxy_manager_users` variable
+- Supports Users management
+- Supports Access Lists management
 
 ## Requirements
 - Ansible >= 2.12
@@ -51,32 +51,51 @@ This role installs and configures NPM inside a Docker container using the unoffi
 | `nginx_proxy_manager_external_network` | `nginx-proxy`                       | Docker external network to attach the container |
 | `nginx_proxy_manager_ports`            | `['80:8080', '81:8181', '443:443']` | List of port mappings (host\:container)         |
 
-### Default Admin User
+## Tasks Usage
 
-| Variable                               | Default             | Description                                 |
-| -------------------------------------- | ------------------- | ------------------------------------------- |
-| `nginx_proxy_manager_default_email`    | `admin@example.com` | Default admin email used at first launch    |
-| `nginx_proxy_manager_default_password` | `changeme`          | Default admin password used at first launch |
+### User Configuration
 
-#### User Definitions
+#### Update User:
+Update Default User:
 
 ```yaml
-nginx_proxy_manager_users:
-  - name: 'John Doe'
-    nickname: 'superadmin'
-    email: 'johndoe@gmail.com'
-    roles:
-      - admin
-    password: 'mysuperpassword'
+- name: Update Default User
+  ansible.builtin.include_role:
+    name: h33n0k.services.nginx_proxy_manager
+    tasks_from: user/update
+  vars:
+    user:
+      id: 1
+      name: 'John Doe'
+      nickname: 'superadmin'
+      email: 'johndoe@gmail.com'
+      roles:
+        - admin
+      password:
+        current: changeme
+        new: 'mysuperpassword'
 ```
 
-Each user requires:
+### Access Lists Configuration
 
-* `name` (Full name)
-* `nickname` (Username)
-* `email` (Unique address)
-* `roles` (`[admin]` or undefined)
-* `password` (Clear text password)
+#### Create ACL:
+```yaml
+- name: Set Admin Access
+  ansible.builtin.include_role:
+    name: h33n0k.services.nginx_proxy_manager
+    tasks_from: access_lists/set
+  vars:
+    list:
+      name: Admin
+      satisfy_any: true # Default (true)
+      pass_auth: false # Default (false)
+      users:
+        - username: johndoe
+          password: mysuperpassword
+      access:
+        - address: 0.0.0.0/0
+          directive: allow
+```
 
 > 🔐 Store credentials in a vaulted file (e.g. group_vars/all/secrets.yml) using ansible-vault for production deployments.
 

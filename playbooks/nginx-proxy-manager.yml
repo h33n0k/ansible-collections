@@ -14,7 +14,7 @@
         name: h33n0k.services.nginx_proxy_manager
         tasks_from: setup
 
-    - name: Update Default User
+    - name: Check if Default User exists
       block:
         - name: Generate Token
           ansible.builtin.include_role:
@@ -52,3 +52,13 @@
       loop_control:
         label: '{{ item.name }}'
       when: token_generated
+
+    - name: Define Access Lists
+      ansible.builtin.include_role:
+        name: h33n0k.services.nginx_proxy_manager
+        tasks_from: access_lists/set
+      vars:
+        list: '{{ item }}'
+      loop: '{{ nginx_proxy_manager_access_lists | default([]) }}'
+      loop_control:
+        label: '{{ item.name }}'

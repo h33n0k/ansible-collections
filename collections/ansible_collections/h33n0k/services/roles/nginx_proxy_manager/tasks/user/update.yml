@@ -1,6 +1,6 @@
 ---
 - name: Generate Token
-  ansible.builtin.include_tasks: ../token.yml
+  ansible.builtin.include_tasks: '{{ role_path }}/tasks/token.yml'
   when: nginx_proxy_manager_api_token is not defined
 
 - name: Update User
