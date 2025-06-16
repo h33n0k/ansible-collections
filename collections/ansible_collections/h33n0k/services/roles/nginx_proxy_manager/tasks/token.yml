@@ -1,0 +1,18 @@
+---
+- name: Get API Token
+  ansible.builtin.uri:
+    url: 'http://localhost:81/api/tokens'
+    method: POST
+    body:
+      identity: '{{ nginx_proxy_manager_users[0].email }}'
+      secret: '{{ nginx_proxy_manager_users[0].password }}'
+    body_format: json
+    headers:
+      Content-Type: 'application/json'
+    return_content: true
+    status_code: 200
+  register: token_response
+
+- name: Set Token
+  ansible.builtin.set_fact:
+    nginx_proxy_manager_api_token: '{{ (token_response.content | from_json).token }}'

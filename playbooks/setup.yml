@@ -9,7 +9,12 @@
     - h33n0k.basics.time
     - h33n0k.basics.logging
     - h33n0k.security.firewall
-    - name: h33n0k.tools.docker
-      docker_install: true
-    # - h33n0k.tools.cron
-    - h33n0k.basics.auth
+  tasks:
+    - name: Install Docker
+      ansible.builtin.include_role:
+        name: h33n0k.tools.docker
+        tasks_from: install
+
+    - name: Setup Authentication
+      ansible.builtin.include_role:
+        name: h33n0k.basics.auth

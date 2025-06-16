@@ -1,0 +1,19 @@
+---
+- name: Generate Token
+  ansible.builtin.include_tasks: '{{ role_path }}/tasks/token.yml'
+  when: nginx_proxy_manager_api_token is not defined
+
+- name: Fetch Proxy Hosts
+  ansible.builtin.uri:
+    url: 'http://localhost:81/api/nginx/proxy-hosts'
+    method: GET
+    headers:
+      Content-Type: 'application/json'
+      Authorization: 'Bearer {{ nginx_proxy_manager_api_token }}'
+    return_content: true
+    status_code: 200
+  register: fetched_proxy_hosts
+
+- name: Set Proxy Hosts
+  ansible.builtin.set_fact:
+    proxy_hosts: '{{ fetched_proxy_hosts.content | default([]) }}'

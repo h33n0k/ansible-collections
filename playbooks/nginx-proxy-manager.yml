@@ -1,0 +1,79 @@
+---
+- name: Configure NGINX PROXY MANAGER
+  hosts: all
+  become: true
+
+  collections:
+    - h33n0k.tools
+    - h33n0k.services
+
+  tasks:
+
+    - name: Start Container
+      ansible.builtin.include_role:
+        name: h33n0k.services.nginx_proxy_manager
+        tasks_from: setup
+
+    - name: Check if Default User exists
+      block:
+        - name: Generate Token
+          ansible.builtin.include_role:
+            name: h33n0k.services.nginx_proxy_manager
+            tasks_from: token
+          vars:
+            nginx_proxy_manager_users:
+              - email: admin@example.com
+                password: changeme
+      rescue:
+        - name: Skip next task - token generation failed
+          set_fact:
+            token_generated: false
+      always:
+        - name: Set flag if token generation succeeded
+          set_fact:
+            token_generated: true
+          when: ansible_failed_result is not defined
+
+    - name: Update Default User
+      ansible.builtin.include_role:
+        name: h33n0k.services.nginx_proxy_manager
+        tasks_from: user/update
+      vars:
+        user:
+          id: 1
+          name: '{{ item.name }}'
+          nickname: '{{ item.nickname }}'
+          email: '{{ item.email }}'
+          roles: '{{ item.roles }}'
+          password:
+            current: changeme
+            new: '{{ item.password }}'
+      loop: '{{ nginx_proxy_manager_users[:1] }}' # First Defined User
+      loop_control:
+        label: '{{ item.name }}'
+      when: token_generated
+
+    - name: Define Access Lists
+      ansible.builtin.include_role:
+        name: h33n0k.services.nginx_proxy_manager
+        tasks_from: access_lists/set
+      vars:
+        list: '{{ item }}'
+      loop: '{{ nginx_proxy_manager_access_lists | default([]) }}'
+      loop_control:
+        label: '{{ item.name }}'
+
+    - name: Set Admin Proxy Host
+      ansible.builtin.include_role:
+        name: h33n0k.services.nginx_proxy_manager
+        tasks_from: proxy_hosts/set
+      vars:
+        proxy:
+          domains:
+            - '{{ nginx_proxy_manager_admin_domain }}'
+          forward:
+            host: localhost
+            port: 8181
+          access_list: Admin
+          ssl:
+            enabled: false

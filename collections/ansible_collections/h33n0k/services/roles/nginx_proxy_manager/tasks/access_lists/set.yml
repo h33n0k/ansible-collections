@@ -1,0 +1,32 @@
+---
+- name: Fetch Access Lists
+  ansible.builtin.include_tasks: '{{ role_path }}/tasks/access_lists/fetch.yml'
+
+- name: Check if Access List exists
+  ansible.builtin.set_fact:
+    exists: >-
+      {{
+        (access_lists
+          | selectattr('name', 'equalto', list.name)
+          | list
+          | first) | default(false)
+      }}
+
+# Create new or Update existing
+- name: Set Access List
+  ansible.builtin.uri:
+    url: "http://localhost:81/api/nginx/access-lists/{{ exists.id if exists is not false else '' }}"
+    method: "{{ 'PUT' if exists is not false else 'POST' }}"
+    headers:
+      Content-Type: 'application/json'
+      Authorization: 'Bearer {{ nginx_proxy_manager_api_token }}'
+    body_format: json
+    body:
+      name: '{{ list.name }}'
+      satisfy_any: '{{ list.satisfy_any | default(true) }}'
+      pass_auth: '{{ list.pass_auth | default(false) }}'
+      items: '{{ list.users | default([]) }}'
+      clients: '{{ list.access | default([]) }}'
+    return_content: true
+    status_code: '{{ 200 if exists is not false else 201 }}'
+  register: created_access_lists

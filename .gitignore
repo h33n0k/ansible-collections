@@ -4,6 +4,9 @@ venv/
 __pycache__
 pytestdebug.log
 
+# Ignoring env variables
+inventory/group_vars/all/secrets.yml
+
 # Ignoring galaxy dependencies
 collections/ansible_collections/*
 !collections/ansible_collections/h33n0k
