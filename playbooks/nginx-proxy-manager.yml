@@ -62,3 +62,13 @@
       loop: '{{ nginx_proxy_manager_access_lists | default([]) }}'
       loop_control:
         label: '{{ item.name }}'
+
+    - name: Define Proxy Hosts
+      ansible.builtin.include_role:
+        name: h33n0k.services.nginx_proxy_manager
+        tasks_from: proxy_hosts/set
+      vars:
+        proxy: '{{ item }}'
+      loop: '{{ nginx_proxy_manager_proxy_hosts | default([]) }}'
+      loop_control:
+        label: '{{ item.domains }}'
