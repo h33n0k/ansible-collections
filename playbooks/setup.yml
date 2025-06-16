@@ -1,11 +1,20 @@
 ---
-- name: Basic setup
+- name: Init Setup
   hosts: all
   become: true
   collections:
     - h33n0k.basics
+    - h33n0k.tools
   roles:
     - h33n0k.basics.time
     - h33n0k.basics.logging
     - h33n0k.security.firewall
-    - h33n0k.basics.auth
+  tasks:
+    - name: Install Docker
+      ansible.builtin.include_role:
+        name: h33n0k.tools.docker
+        tasks_from: install
+
+    - name: Setup Authentication
+      ansible.builtin.include_role:
+        name: h33n0k.basics.auth

@@ -1,0 +1,41 @@
+---
+- name: Setup NGINX PROXY MANAGER Docker Container
+  ansible.builtin.include_role:
+    name: h33n0k.tools.docker
+    tasks_from: run
+  vars:
+    container:
+      env:
+        USER_ID: '0'
+        GROUP_ID: '4'
+      name: '{{ nginx_proxy_manager_name }}'
+      image: '{{ nginx_proxy_manager_image }}'
+      ports: '{{ nginx_proxy_manager_ports }}'
+      restart: '{{ nginx_proxy_manager_restart }}'
+      volumes:
+        - host: '/var/log/nginx-proxy-manager'
+          container: '/config/logs'
+          type: directory
+          access: rw
+        - host: '/etc/opt/nginx-proxy-manager'
+          container: '/config'
+          type: directory
+          access: rw
+      networks:
+        - name: '{{ nginx_proxy_manager_external_network }}'
+          driver: bridge
+          ipam_config:
+            - subnet: 192.168.10.0/24
+
+- name: Wait for API
+  ansible.builtin.uri:
+    url: 'http://localhost:81/api/'
+    method: GET
+    headers:
+      Content-Type: 'application/json'
+    return_content: true
+    status_code: 200
+  register: health
+  until: health.status == 200 and (health.content | from_json).status == 'OK'
+  retries: 10
+  delay: 20

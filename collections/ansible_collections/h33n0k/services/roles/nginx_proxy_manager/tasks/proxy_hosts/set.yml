@@ -1,0 +1,106 @@
+---
+- name: Fetch Proxy Hosts
+  ansible.builtin.include_tasks: '{{ role_path }}/tasks/proxy_hosts/fetch.yml'
+
+- name: Fetch Access Lists
+  ansible.builtin.include_tasks: '{{ role_path }}/tasks/access_lists/fetch.yml'
+
+- name: Check if Access List exists
+  ansible.builtin.set_fact:
+    acl_exists: >-
+      {{
+        (access_lists
+        | selectattr('name', 'equalto', proxy.access_list)
+        | list
+        | first) | default(false)
+      }}
+  when: proxy.access_list is defined
+
+- name: Fail if Access List does not exists
+  ansible.builtin.fail:
+    msg: 'Acess List {{ proxy.access_list }} does not exist'
+  when:
+    - proxy.access_list is defined
+    - not acl_exists
+
+- name: Fetch Certificates
+  ansible.builtin.include_tasks: '{{ role_path }}/tasks/certificates/fetch.yml'
+  when: proxy.ssl.enabled | default(false)
+
+- name: Default cert_exists to false
+  ansible.builtin.set_fact:
+    cert_exists: false
+  when: proxy.ssl.enabled | default(false)
+
+- name: Find Certificate with all required domains
+  ansible.builtin.set_fact:
+    cert_exists: '{{ f_cert }}'
+  loop: '{{ certificates }}'
+  loop_control:
+    label: '{{ proxy.domains }}'
+    loop_var: f_cert
+  when:
+    - proxy.ssl.enabled | default(false)
+    - proxy.domains | difference(f_cert.domain_names | default([])) | length == 0
+    - not cert_exists
+
+- name: Set Certificate
+  ansible.builtin.set_fact:
+    certificate: >-
+      {{
+        cert_exists.id
+          if cert_exists is defined and cert_exists != false
+        else
+          (
+            'new'
+              if proxy.ssl.enabled | default(false) == true
+            else
+              0
+          )
+      }}
+
+- name: Generate Token
+  ansible.builtin.include_tasks: '{{ role_path }}/tasks/token.yml'
+  when: nginx_proxy_manager_api_token is not defined
+
+- name: Default exists to false
+  ansible.builtin.set_fact:
+    exists: false
+
+- name: Find Proxy Host with all required domains
+  ansible.builtin.set_fact:
+    exists: '{{ f_proxy }}'
+  loop: '{{ proxy_hosts }}'
+  loop_control:
+    label: '{{ proxy.domains }}'
+    loop_var: f_proxy
+  when:
+    - proxy.domains | difference(f_proxy.domain_names | default([])) | length == 0
+    - not exists
+
+- name: Set Proxy Host
+  ansible.builtin.uri:
+    url: "http://localhost:81/api/nginx/proxy-hosts/{{ exists.id if exists is not false else '' }}"
+    method: "{{ 'PUT' if exists is not false else 'POST' }}"
+    headers:
+      Content-Type: 'application/json'
+      Authorization: 'Bearer {{ nginx_proxy_manager_api_token }}'
+    body_format: json
+    body:
+      enabled: '{{ proxy.enabled | default(true) }}'
+      domain_names: '{{ proxy.domains }}'
+      forward_scheme: "{{ proxy.forward.scheme | default('http') }}"
+      forward_host: '{{ proxy.forward.host }}'
+      forward_port: '{{ proxy.forward.port | default(80) }}'
+      access_list_id: '{{ 0 if proxy.access_list is not defined else acl_exists.id }}'
+      allow_websocket_upgrade: '{{ proxy.websocket | default(false) }}'
+      caching_enabled: '{{ proxy.caching | default(true) }}'
+      block_exploits: '{{ proxy.block_exploits | default(true) }}'
+      certificate_id: '{{ certificate }}'
+      ssl_forced: '{{ proxy.ssl.force | default(true) }}'
+      hsts_enabled: '{{ proxy.ssl.hsts.enabled | default(true) }}'
+      hsts_subdomains: '{{ proxy.ssl.hsts.subdomains | default(true) }}'
+      http2_support: '{{ proxy.ssl.http2 | default(true) }}'
+    return_content: true
+    status_code: '{{ 200 if exists is not false else 201 }}'
+  register: created_proxy_host

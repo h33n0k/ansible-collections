@@ -1,0 +1,17 @@
+---
+- name: Prepare
+  hosts: all
+  gather_facts: true
+  become: true
+  tasks:
+
+    - name: Ensure ACL package is installed
+      ansible.builtin.apt:
+        name: acl
+        state: present
+        update_cache: true
+
+    - name: Ensure docker group exists
+      ansible.builtin.group:
+        name: docker
+        state: present

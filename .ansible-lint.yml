@@ -1,7 +1,7 @@
 warn_list:
   - fqcn[action]
   - fqcn[bare-variable]
-
+  - yaml[line-length]
 skip_list:
   - galaxy[no-changelog]
   - yaml[empty-lines]

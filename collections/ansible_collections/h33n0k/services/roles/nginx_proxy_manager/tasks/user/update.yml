@@ -1,0 +1,38 @@
+---
+- name: Generate Token
+  ansible.builtin.include_tasks: '{{ role_path }}/tasks/token.yml'
+  when: nginx_proxy_manager_api_token is not defined
+
+- name: Update User
+  ansible.builtin.uri:
+    url: 'http://localhost:81/api/users/{{ user.id }}'
+    method: PUT
+    headers:
+      Content-Type: 'application/json'
+      Authorization: 'Bearer {{ nginx_proxy_manager_api_token }}'
+    body_format: json
+    body:
+      name: '{{ user.name }}'
+      nickname: '{{ user.nickname }}'
+      email: '{{ user.email }}'
+      roles: '{{ user.roles }}'
+    return_content: true
+    status_code: 200
+  register: created_user
+
+- name: Update User Auth
+  ansible.builtin.uri:
+    url: 'http://localhost:81/api/users/{{ user.id }}/auth'
+    method: PUT
+    headers:
+      Content-Type: 'application/json'
+      Authorization: 'Bearer {{ nginx_proxy_manager_api_token }}'
+    body_format: json
+    body:
+      type: 'password'
+      current: '{{ user.password.current }}'
+      secret: '{{ user.password.new }}'
+    return_content: true
+    status_code: 201
+  register: updated_auth
+  when: user.password is defined

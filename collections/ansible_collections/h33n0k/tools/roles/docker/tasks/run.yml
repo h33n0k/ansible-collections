@@ -1,0 +1,65 @@
+---
+- name: Ensure Docker Volumes exist on host
+  ansible.builtin.include_tasks: volume.yml
+  tags:
+    - volume
+  vars:
+    volume: '{{ item }}'
+  loop: '{{ container.volumes | default([]) }}'
+  loop_control:
+    label: '{{ item.host }}'
+  when: container.volumes_setup | default(true)
+
+- name: Build Docker volume list
+  ansible.builtin.set_fact:
+    volumes_specs: >-
+      {{ volumes_specs | default([]) + [item.host + ':' + item.container + ':' + (item.access | default('rw'))] }}
+  loop: '{{ container.volumes | default([]) }}'
+  loop_control:
+    label: '{{ item.host }}'
+
+- name: Ensure Docker networks exists
+  community.docker.docker_network:
+    name: '{{ item.name }}'
+    driver: "{{ item.driver | default('default') }}"
+    ipam_config: '{{ item.ipam_config }}'
+  loop: '{{ container.networks }}'
+  loop_control:
+    label: '{{ item.name }}'
+
+- name: Build Docker network list
+  ansible.builtin.set_fact:
+    networks_specs: >-
+      {{ networks_specs | default([]) + [{'name': item.name}] }}
+  loop: '{{ container.networks }}'
+  loop_control:
+    label: '{{ item.name }}'
+
+- name: Build Container Specs
+  ansible.builtin.set_fact:
+    container_specs:
+      name: '{{ container.name }}'
+      image: '{{ container.image }}'
+      published_ports: '{{ container.ports }}'
+      restart_policy: "{{ container.restart | default('unless-stopped') }}"
+      env: '{{ container.env | default({}) }}'
+      state: started
+      volumes: '{{ volumes_specs | default([]) }}'
+      networks: '{{ networks_specs }}'
+      user: '0:0'
+
+- name: Setup Docker Container
+  ansible.builtin.debug:
+    msg: '{{ container_specs }}'
+
+- name: Start Container
+  community.docker.docker_container:
+    name: '{{ container_specs.name }}'
+    state: '{{ container_specs.state }}'
+    image: '{{ container_specs.image }}'
+    restart_policy: '{{ container_specs.restart_policy }}'
+    env: '{{ container_specs.env }}'
+    user: '{{ container_specs.user }}'
+    networks: '{{ container_specs.networks }}'
+    volumes: '{{ container_specs.volumes }}'
+    published_ports: '{{ container_specs.published_ports }}'

@@ -1,0 +1,18 @@
+---
+galaxy_info:
+  role_name: nginx_proxy_manager
+  author: h33n0k
+  license: MIT
+
+  description: Install and Setup NGINX PROXY MANAGER
+  galaxy_tags:
+    - npm
+    - container
+    - docker
+
+  min_ansible_version: '2.12'
+  platforms:
+    - name: Debian
+      versions:
+        - bookworm
+        - bullseye
