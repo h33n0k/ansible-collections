@@ -97,6 +97,33 @@ Update Default User:
           directive: allow
 ```
 
+### Proxy Hosts Configuration
+#### Create Proxy Host
+```yml
+- name: Set Admin Proxy Host
+  ansible.builtin.include_role:
+    name: h33n0k.services.nginx_proxy_manager
+    tasks_from: proxy_hosts/set
+  vars:
+    proxy:
+      domains:
+        - 'admin.debian.local'
+      forward:
+        host: localhost
+        port: 8181
+      access_list: Admin
+      ssl:
+        enabled: false # Default (true)
+        force: true # Default (true)
+        http2: true # Default (true)
+        hsts:
+          enabled: true # Default (true)
+          subdomains: true # Default (true)
+```
+
+> When SSL is enabled, the task attempts to locate an existing SSL certificate matching the provided domain names. If no matching certificate is found, a new one will be generated.
+
+
 > 🔐 Store credentials in a vaulted file (e.g. group_vars/all/secrets.yml) using ansible-vault for production deployments.
 
 ## Example Playbook
