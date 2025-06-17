@@ -20,12 +20,13 @@
 
 - name: Ensure Docker networks exists
   community.docker.docker_network:
-    name: '{{ item.name }}'
-    driver: "{{ item.driver | default('default') }}"
-    ipam_config: '{{ item.ipam_config }}'
+    name: '{{ network.name }}'
+    driver: '{{ network.driver | default(omit) }}'
+    ipam_config: '{{ network.ipam_config | default(omit) }}'
   loop: '{{ container.networks }}'
   loop_control:
-    label: '{{ item.name }}'
+    label: '{{ network.name }}'
+    loop_var: network
 
 - name: Build Docker network list
   ansible.builtin.set_fact:
@@ -40,7 +41,7 @@
     container_specs:
       name: '{{ container.name }}'
       image: '{{ container.image }}'
-      published_ports: '{{ container.ports }}'
+      published_ports: '{{ container.ports | default([]) }}'
       restart_policy: "{{ container.restart | default('unless-stopped') }}"
       env: '{{ container.env | default({}) }}'
       state: started
