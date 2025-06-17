@@ -1,0 +1,43 @@
+---
+- name: Setup and Configure Vaultwarden
+  hosts: all
+  become: true
+
+  vars:
+    vaultwarden_user: h33n0k
+    vaultwarden_domain: vault.gorr.in
+    vaultwarden_domain_scheme: https
+
+  tasks:
+
+    - name: Deploy VaultWarden Container
+      ansible.builtin.include_role:
+        name: h33n0k.tools.docker
+        tasks_from: run
+      vars:
+        container:
+          name: vaultwarden
+          image: 'vaultwarden/server:latest'
+          env:
+            DOMAIN: '{{ vaultwarden_domain_scheme }}://{{ vaultwarden_domain }}'
+          volumes:
+            - host: '/home/{{ vaultwarden_user }}/.local/share/vaultwarden'
+              container: '/data'
+              type: directory
+              group: '{{ vaultwarden_user }}'
+          networks:
+            - name: nginx-proxy
+
+
+    - name: Add NGINX Proxy Host
+      ansible.builtin.include_role:
+        name: h33n0k.services.nginx_proxy_manager
+        tasks_from: proxy_hosts/set
+      vars:
+        proxy:
+          domains:
+            - '{{ vaultwarden_domain }}'
+          forward:
+            host: vaultwarden
+          ssl:
+            enabled: true
