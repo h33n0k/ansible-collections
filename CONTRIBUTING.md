@@ -37,6 +37,7 @@ Thank you for considering contributing to this project! Follow the steps below t
    ```bash
    make test # test all roles
    make test ROLE=basics/time # test specific role
+   make test ROLE=tools/docker SCENARIO=volume COMMAND=converge
    make test STAGED_ONLY # test modified role
    make test CHANGED_SINCE=<commit-hash> # test changed role since this commit
    ```

@@ -5,7 +5,7 @@ This repository contains a curated set of Ansible collections and roles tailored
 ## ✅ Requirements
 
 - **Ansible**: Version `2.12+` is required.
-- **Target OS**: Debian 12 (Bookworm)
+- **Target OS**: Debian 12
 
 For installation instructions and platform-specific requirements, refer to the [official Ansible installation guide](https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html).
 
@@ -15,8 +15,6 @@ Each role is self-contained and documented following a consistent structure to i
 
 - `README.md`: Role description, supported variables, and usage examples.
 - `defaults/main.yml`: Default values for role variables.
-- `tasks/main.yml`: Main task logic.
-- `handlers/`: Service handler triggers.
 - `meta/main.yml`: Metadata (platforms, dependencies).
 - `examples/`: Sample playbooks for common use cases.
 
@@ -28,7 +26,12 @@ This structure promotes clarity and encourages reuse across projects.
 - Bootstrap fresh Debian servers using the [`basics`](./collections/ansible_collections/h33n0k/basics/README.md) roles:
   - Timezone and locale setup
   - User and SSH configuration
+  - System log and log rotation
   - System updates and package installation
+
+### 🪚 Tool Setup
+- Install and configure tools like:
+    - Docker
 
 ### 🌐 Services Deployment
 - Install and configure web servers (e.g., Nginx)
@@ -36,7 +39,6 @@ This structure promotes clarity and encourages reuse across projects.
 
 ### 🔐 Hardening
 - Apply basic security policies (e.g., UFW, fail2ban)
-- Configure automatic security updates
 
 ## 🧪 Testing & Linting
 
@@ -48,6 +50,20 @@ make test # test all roles
 make test ROLE=basics/time # test specific role
 make test CHANGED_SINCE=<commit-hash> # test changed role since this commit
 ```
+
+---
+
+## Roles Documentation
+- Basics:
+    - [Auth](./collections/ansible_collections/h33n0k/basics/roles/auth/README.md)
+    - [Logging](./collections/ansible_collections/h33n0k/basics/roles/logging/README.md)
+    - [Time](./collections/ansible_collections/h33n0k/basics/roles/time/README.md)
+- Security:
+    - [Firewall](./collections/ansible_collections/h33n0k/security/roles/firewall/README.md)
+- Tools:
+    - [Docker](./collections/ansible_collections/h33n0k/tools/roles/docker/README.md)
+- Services:
+    - [Nginx Proxy Manager](./collections/ansible_collections/h33n0k/services/roles/nginx_proxy_manager/README.md)
 
 ---
 
